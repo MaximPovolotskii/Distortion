@@ -21,8 +21,11 @@ def fourier_transform(channel, duration):
     fig1, ax1 = plt.subplots()
     ax1.plot(xf, 2.0/N * np.abs(yf[:N//16]))
     
-    zf = scipy.fftpack.ifft(yf)
-    #ax1.plot(xf, zf)
+                                   
+    fig2, ax2 = plt.subplots()
+    xf1 = np.linspace(0.0, 1.0/(2.0*T), N)
+    zf = scipy.fftpack.ifft(yf) # в идеале эта функция обратно преобразовывает
+    ax2.plot(xf1, zf) #рисуем график обратного преобразования
     plt.show()
     
     
