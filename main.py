@@ -3,11 +3,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import math #встроенная
+'''
 import wavio #импортируется pip install
 import soundfile as sf #импортируется pip install
+'''
 from int3 import sign_int3
 from distortion import distortion
-
+from fourier import fourier_transform
 """
 Предупреждение! Последняя строчка файла - создание файла с перегруженной гитарой
 """
@@ -66,6 +68,7 @@ for i in range(len(sample_b) // 3):
 channel = sample[0::nchannels]
 print(channel[0], channel[1], channel[2], channel[3], channel[4], channel[110000], channel[110001], channel[110002])
 print(roof)
+print(len(channel))
 
 d_channel = distortion(channel, roof, 100)
 
@@ -91,4 +94,6 @@ plt.show()
 Если закрыть консоль до закрытия графика, файл не создастся
 """
 
-wavio.write("gain100.wav", np.array(d_channel), rate=framerate, sampwidth=3)
+chan = channel[157900:158800] #отрезок, который хотим разложить в фурье
+fourier_transform(chan, duration*len(chan)/len(channel))
+#wavio.write("gain100.wav", np.array(d_channel), rate=framerate, sampwidth=3)
