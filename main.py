@@ -10,90 +10,51 @@ import soundfile as sf #импортируется pip install
 from int3 import sign_int3
 from distortion import distortion
 from fourier import fourier_transform
+from int_channel import WavFile
 """
 Предупреждение! Последняя строчка файла - создание файла с перегруженной гитарой
 """
 
-def format_time(x, pos=None):
-    global duration, nframes
-    progress = int(x / float(nframes) * duration)
-    mins, secs = divmod(progress, 60)
-    hours, mins = divmod(mins, 60)
-    out = "%d:%02d" % (mins, secs)
-    if hours > 0:
-        out = "%d:" % hours
-    return out
-
-def format_db(x, pos=None):
-    if pos == 0:
-        return ""
-    global roof
-    if x == 0:
-        return "-inf"
-    db = 20 * math.log10(abs(x) / float(roof))
-    return int(db)
-
-wav = wave.open("sample1.wav", mode="r")
-(nchannels, sampwidth, framerate, nframes, comp_type, comp_name) = wav.getparams()
-content = wav.readframes(nframes)
-print(nchannels, sampwidth, framerate, nframes, comp_type, comp_name)
-print(len(content))
-
-sample_b = sign_int3(content)
-
-sample1 = np.fromstring(content, dtype=np.int8)
-print(sample1[0], sample_b[0], content[0])
-print(sample1[1], sample_b[1], content[1])
-print(sample1[2], sample_b[2], content[2])
-print(sample1[3], sample_b[3])
-print(sample1[4], sample_b[4])
-print(sample1[5], sample_b[5])
-print(sample1[6], sample_b[6])
-print(sample1[7], sample_b[7])
-print(sample1[8], sample_b[8])
-print(sample1[9], sample_b[9])
-print(sample1[10], sample_b[10])
-
-duration = nframes / framerate 
 w, h = 800, 300
 DPI = 72
-roof = 256 ** sampwidth // 2
-k = nframes/w/32
 
-sample = []
+WavFile_1 = WavFile("D:\Stossgebet_acoustic.wav")
+d_channel = distortion(WavFile_1.channel(), WavFile_1.roof // 2, 5)
 
-for i in range(len(sample_b) // 3):
-    sample.append(sample_b[3 * i + 2] * (256**2) + sample_b[3 * i + 1] * 256 + sample_b[3 * i])
+WavFile_2 = WavFile("D:\Stossgebet.wav")
 
-channel = sample[0::nchannels]
-print(channel[0], channel[1], channel[2], channel[3], channel[4], channel[110000], channel[110001], channel[110002])
-print(roof)
-print(len(channel))
-
-d_channel = distortion(channel, roof, 100)
-
+"""
 plt.figure(1, figsize=(float(w)/DPI, float(h)/DPI), dpi=DPI)
 
-axes = plt.subplot(2, 1, 1, facecolor="k")
-axes.plot(channel, "g")
-axes.yaxis.set_major_formatter(ticker.FuncFormatter(format_db))
+axes = plt.subplot(3, 1, 1, facecolor="k")
+axes.plot(WavFile_1.channel(), "g")
+axes.yaxis.set_major_formatter(ticker.FuncFormatter(WavFile_1.format_db))
 plt.grid(True, color="w")
-axes.xaxis.set_major_formatter(ticker.NullFormatter())
+axes.xaxis.set_major_formatter(ticker.FuncFormatter(WavFile_1.format_time))
 
-axes = plt.subplot(2, 1, 2, facecolor="k")
+axes = plt.subplot(3, 1, 2, facecolor="k")
 axes.plot(d_channel, "g")
-axes.yaxis.set_major_formatter(ticker.FuncFormatter(format_db))
+axes.yaxis.set_major_formatter(ticker.FuncFormatter(WavFile_1.format_db))
 plt.grid(True, color="w")
 axes.xaxis.set_major_formatter(ticker.NullFormatter())
 
-axes.xaxis.set_major_formatter(ticker.FuncFormatter(format_time))
-plt.show()
+axes = plt.subplot(3, 1, 3, facecolor="k")
+axes.plot(WavFile_2.channel(), "g")
+axes.yaxis.set_major_formatter(ticker.FuncFormatter(WavFile_2.format_db))
+plt.grid(True, color="w")
+axes.xaxis.set_major_formatter(ticker.FuncFormatter(WavFile_2.format_time))
+"""
 
 """
 Чтобы дисторшн-файл создался, надо закрыть график
 Если закрыть консоль до закрытия графика, файл не создастся
 """
+point = 48000 * 8
+point2 = int(48000 * (8 - 1.68))
 
-chan = channel[157900:158800] #отрезок, который хотим разложить в фурье
-fourier_transform(chan, duration*len(chan)/len(channel))
+chan = WavFile_1.channel()[point:point+2000] #отрезок, который хотим разложить в Фурье
+chan2 = WavFile_2.channel()[point2:point2+2000]
+fourier_transform([chan, WavFile_1.duration*len(chan)/len(d_channel)],
+                  [chan2, WavFile_2.duration*len(chan2)/len(WavFile_2.channel())])
+
 #wavio.write("gain100.wav", np.array(d_channel), rate=framerate, sampwidth=3)
