@@ -10,6 +10,3 @@ def sign_int3(content):
             sample_b[3 * i + 1] = sample_b[3 * i + 1] - 255
             sample_b[3 * i] = sample_b[3 * i] - 256
     return sample_b
-
-content = [45, 255, 255, 45, 255, 255]
-print(sign_int3(content))

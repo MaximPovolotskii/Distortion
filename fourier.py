@@ -1,31 +1,27 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import scipy.fftpack
+import scipy.special
 import copy
 
-def fourier_transform(channel, duration):
-    d_channel = copy.copy(channel)
-    # Number of samplepoints
-    N = len(d_channel)
-    # sample spacing
-    T = duration
-    yf = scipy.fftpack.fft(d_channel)
-    tf = np.linspace(0.0, T, N)
-    xf = np.linspace(0.0, 1.0/(2.0*T), N//16) #тут можно N//2, так высокие частоты обрезаются
-    
-    #рисуем график самого отрезка
+
+def fourier_transform(*tracks_with_durations): #[track, duration]
     fig, ax = plt.subplots()
-    ax.plot(tf, channel)
-    
-    #рисуем разложение по спектру
     fig1, ax1 = plt.subplots()
-    ax1.plot(xf, 2.0/N * np.abs(yf[:N//16]))
-    
-                                   
     fig2, ax2 = plt.subplots()
-    xf1 = np.linspace(0.0, 1.0/(2.0*T), N)
-    zf = scipy.fftpack.ifft(yf) # в идеале эта функция обратно преобразовывает
-    ax2.plot(xf1, zf) #рисуем график обратного преобразования
+    for channel in tracks_with_durations:
+        d_channel = copy.copy(channel[0])
+        # Number of samplepoints
+        N = len(d_channel)
+        # sample spacing
+        dT = channel[1] / N
+        yf = scipy.fft.fft(d_channel)
+        tf = np.linspace(0.0, dT*N, N)
+        xf = np.linspace(0.0, 1.0/(2.0*dT), N//2)
+        #рисуем график самого отрезка
+        ax.plot(tf, d_channel)
+        #рисуем разложение по спектру
+        ax1.plot(xf[0:N//16], 2.0/N * np.abs(yf[0:N//16]))                           
+        zf = scipy.fft.ifft(yf) # в идеале эта функция обратно преобразовывает
+        ax2.plot(tf, zf) #рисуем график обратного преобразования
     plt.show()
-    
-    
+
