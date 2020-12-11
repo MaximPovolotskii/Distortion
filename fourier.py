@@ -21,7 +21,7 @@ def fourier_transform(*tracks_with_durations): #[track, duration]
         ax.plot(tf, d_channel)
         ax.set_title('d_channel')
         # рисуем разложение по спектру
-        ax1.plot(xf[0:N//2], 2.0/N * np.abs(yf[0:N//2])) 
+        ax1.plot(xf[0:N//16], 2.0/N * np.abs(yf[0:N//16])) 
         ax1.set_title('spectrum')                          
         #zf = scipy.fft.ifft(yf) # в идеале эта функция обратно преобразовывает
         #ax2.plot(tf, zf) # рисуем график обратного преобразования
@@ -39,4 +39,4 @@ def reverse_transform(yf, duration):
     ax2.set_title('reverse_transform')
     plt.show()
     
-    return [channel_zf, duration]
+    return channel_zf
