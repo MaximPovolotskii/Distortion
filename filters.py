@@ -69,6 +69,8 @@ class Filter():
 
         plt.show()
 
+        return a
+
 """
 def spectr_filter(fmax, N, filter_type='peak', f0=-1, peak_a0=0.1, peak_b0=0.1, 
                   pass_a0=3, pass_h0=1, shelf_h0=1, shelf_a0=3):
