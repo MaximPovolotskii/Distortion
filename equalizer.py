@@ -5,13 +5,13 @@ from fourier import fourier_transform, reverse_transform
 from filters import Filter
 
 
-def equalize(channel, duration, *filter_cell):
+def piece_equalize(channel, duration, *filter_cell):
     """
     функция эквалайзера: получая на вход канал channel и его длительность duration
     в секундах, возвращает отфильтрованный через все фильтры в массиве filter_cell
     новый канал new_channel
     """
-    spectrum = fourier_transform([channel, duration])[0]
+    spectrum = fourier_transform([channel, duration])[1]
     N = len(channel)
     
     for cell in filter_cell:
@@ -19,35 +19,71 @@ def equalize(channel, duration, *filter_cell):
         
     dT = duration / N
     xf = np.linspace(0.0, 1.0/(2.0*dT), (N+2)//2)
-    
+    """
     # здесь начинается рисование нового спектра
     fig, ax = plt.subplots()
-    ax.plot(xf[0:N//8], 2.0/N * np.abs(spectrum)[0:N//8]) 
+    ax.plot(xf[0:N//32], 2.0/N * np.abs(spectrum)[0:N//32]) 
     ax.set_title('new spectrum')
     # закончилось
-    
+    """
     new_channel = reverse_transform(spectrum, duration)
+    new_channel_ps = new_channel.tolist()
+    
+    for i in range(len(new_channel_ps)):
+        new_channel_ps[i] = int(new_channel_ps[i])
+        
+    return new_channel_ps
+
+
+def equalize(channel, duration, *filter_cell):
+    """
+    общая функция эквалайзера, которая сначала разбивает канал на части по 960 сэмплов (0.02 с),
+    выполняет на каждом из них эквализацию, а потом опять склеивает
+    """
+    new_channel = []
+    number = len(channel) // 960
+    
+    for i in range(number):
+        new_channel = new_channel + piece_equalize(channel[960*i : 960*(i + 1)], duration * 960 / len(channel),
+                                                   *filter_cell)
+        
+    new_channel = new_channel + piece_equalize(channel[960*number : len(channel)],
+                                               duration * (len(channel) - 960 * number) / len(channel),
+                                               *filter_cell)
+
     return new_channel
 
 
 """
-# тестирующая программа
-T = 0.1
-N = int(48000 * T)
-frec = 300
+лонгрид о предпочтительных настройках эквалайзера:
+1) для заглушения "плохих" нижних частот при distortion надо использовать
+    Filter('high_pass', 150, 3, 1)
+2)
+"""
 
-filter1 = Filter('peak', frec*3, 0.1, 0.1)
+
+"""
+# тестирующая программа
+T = 0.05
+N = int(48000 * T)
+frec = 100
+
+filter1 = Filter('peak', 800, -0.5, 0.1)
 
 t = np.linspace(0.0, T, N)
-w1 = 2*np.pi * frec * 2
-w2 = 2*np.pi * frec * 3
-w3 = 2*np.pi * frec * 4
-w4 = 2*np.pi * frec * 7
-w5 = 2*np.pi * frec * 5
-channel = (255//2 * np.sin(w1 * t) + 255//3 * np.sin(w2 * t) + 255//6 * np.sin(w3 * t) +
-           +255//9 * np.sin(w4 * t) + 255//3 * np.sin(w5 * t))
+
+w1 = 2*np.pi * frec * 1
+w2 = 2*np.pi * frec * 2
+w3 = 2*np.pi * frec * 5
+w4 = 2*np.pi * frec * 10
+w5 = 2*np.pi * frec * 15
+w6 = 2*np.pi * frec * 20
+
+channel = (255 * np.sin(w1 * t) + 255 * np.sin(w2 * t) + 255 * np.sin(w3 * t) +
+           + 255 * np.sin(w4 * t) + 255 * np.sin(w5 * t) + 255 * np.sin(w6 * t))
 new_channel = equalize(channel, T, filter1)
 """
+
 
 
 
