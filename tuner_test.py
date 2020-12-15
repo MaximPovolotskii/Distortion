@@ -1,25 +1,23 @@
 import numpy as np
 import pyaudio
 
-
-FSAMP = 22050       # Sampling frequency in Hz
-FRAME_SIZE = 2048   # How many samples per frame?
-FRAMES_PER_FFT = 16 # FFT takes average across how many frames?
+FSAMP = 22050       # Частота сэмплов Hz
+SAMPLES_PER_FRAME = 2048   # Сэмплов за фрейм
+FRAMES_PER_FFT = 16 # За сколько усредняем
 LOWEST = 60
-HIGHEST = 69
+HIGHEST = 70
 
-NOTE_NAMES = 'C C# D D# E F F# G G# A A# B'.split()
-SAMPLES_PER_FFT = FRAME_SIZE*FRAMES_PER_FFT
+SAMPLES_PER_FFT = SAMPLES_PER_FRAME*FRAMES_PER_FFT
 FREQ_STEP = float(FSAMP)/SAMPLES_PER_FFT
 
-class Listener():
+class Audio():
     
     def __init__(self):
         self.stream = pyaudio.PyAudio().open(format=pyaudio.paInt16,
                                 channels=1,
                                 rate=FSAMP,
                                 input=True,
-                                frames_per_buffer=FRAME_SIZE)
+                                frames_per_buffer=SAMPLES_PER_FRAME)
 
 class Calculator():
     
@@ -32,45 +30,29 @@ class Calculator():
         self.samples = np.zeros(SAMPLES_PER_FFT)
         self.spectrum = []
         
-    def freq_to_number(self):
-        self.number = 69 + 12*np.log2(self.frec/440.0)
-        
-    def number_to_freq(self):
-        self.frec = 440 * 2.0**((self.number - 69)/12.0)
-        
-    def number_to_note_name(self, int_n):
-        self.note_name = NOTE_NAMES[int_n % 12] + str(int_n/12 - 1)
-
 
 class Manager():
     
     def __init__(self):
-        self.audio = Listener()
+        self.audio = Audio()
         self.calc = Calculator(LOWEST, HIGHEST)
     
 mgr = Manager()
 num_frames = 0
 while mgr.audio.stream.is_active():
 
-    # Shift the buffer down and new data in
-    mgr.calc.samples[:-FRAME_SIZE] = mgr.calc.samples[FRAME_SIZE:]
-    mgr.calc.samples[-FRAME_SIZE:] = np.fromstring(mgr.audio.stream.read(FRAME_SIZE), np.int16)
+    # смещаем данные
+    mgr.calc.samples[:-SAMPLES_PER_FRAME] = mgr.calc.samples[SAMPLES_PER_FRAME:]
+    mgr.calc.samples[-SAMPLES_PER_FRAME:] = np.fromstring(mgr.audio.stream.read(SAMPLES_PER_FRAME),
+                                                           np.int16)
 
-    # Run the FFT on the buffer
+    # делаем Фурье-преобразование
     mgr.calc.spectrum = np.fft.rfft(mgr.calc.samples)
 
-    # Get frequency of maximum response 
+    # частота с максимальной амплитудой
     mgr.calc.freq = (np.abs(mgr.calc.spectrum).argmax()) * FREQ_STEP
 
-    # Get note number and nearest note
-    #doesn't work yet
-    '''
-    mgr.calc.freq_to_number()
-    int_n = int(round(mgr.calc.number))
-    mgr.calc.number_to_note_name(int_n)
 
-    '''
-    # Console output once we have a full buffer
     num_frames += 1
     if num_frames >= FRAMES_PER_FFT:
         print( 'freq:',  mgr.calc.freq)
