@@ -64,22 +64,29 @@
 
 Для фильтрации частот был создан класс Filter. 
 У него есть четыре параметра:
-*filter_type : string
+* filter_type : string
 	тип фильтра: peak, low_pass, high_pass, low_shelf, high_shelf
-*f0 : int
+* f0 : int
 	характерная частота фильтрации
-*a0 : float/int
+* a0 : float/int
 	константа фильтрации, отвечающая за вид кривой
-*b0 : float/int
+* b0 : float/int
 	константа фильтрации, не меняющая вид кривой,
 	на нее просто умножается вся функция
 
 Filter.get_table() выдает numpy-массив измененного спектра для N частот от 0 до fmax
 
 Теперь о типах фильтров:
-*high_pass пропускает высокие частоты и не пропускает низкие (высокие - выше заданной)
+* high_pass пропускает высокие частоты и не пропускает низкие (высокие - выше заданной)
 ![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/pictures/high_pass.png )
 ![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/pictures/high_pass_no_ln.png )
+* low_pass, соответственно, наоборот
+* peak резко усиливает область около конкретной частоты
+![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/pictures/peak.png )
+![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/pictures/peak_no_ln.png )
+* high_shelf усиливает частоты выше данной
+![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/pictures/high_shelf.png )
+![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/pictures/high_shelf_no_ln.png )
 ## Эквалайзер
 
 _to be written..._
