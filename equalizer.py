@@ -11,7 +11,7 @@ def piece_equalize(channel, duration, *filter_cell):
     в секундах, возвращает отфильтрованный через все фильтры в массиве filter_cell
     новый канал new_channel
     """
-    spectrum = fourier_transform([channel, duration])[1]
+    spectrum = fourier_transform([channel, duration])[0][1]
     N = len(channel)
     
     for cell in filter_cell:
@@ -61,28 +61,6 @@ def equalize(channel, duration, *filter_cell):
 2)
 """
 
-
-"""
-# тестирующая программа
-T = 0.05
-N = int(48000 * T)
-frec = 100
-
-filter1 = Filter('peak', 800, -0.5, 0.1)
-
-t = np.linspace(0.0, T, N)
-
-w1 = 2*np.pi * frec * 1
-w2 = 2*np.pi * frec * 2
-w3 = 2*np.pi * frec * 5
-w4 = 2*np.pi * frec * 10
-w5 = 2*np.pi * frec * 15
-w6 = 2*np.pi * frec * 20
-
-channel = (255 * np.sin(w1 * t) + 255 * np.sin(w2 * t) + 255 * np.sin(w3 * t) +
-           + 255 * np.sin(w4 * t) + 255 * np.sin(w5 * t) + 255 * np.sin(w6 * t))
-new_channel = equalize(channel, T, filter1)
-"""
 
 
 

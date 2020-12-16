@@ -4,16 +4,16 @@ from filters import Filter
 
 
 # тест для класса
-filter1 = Filter('peak', 450, 0.01, 0.02)
-mas1 = filter1.get_table(1000, 10000)
-filter2 = Filter('high_pass', 100, 0.5, 1)
-mas2 = filter2.get_table(10000, 10000)
+filter1 = Filter('peak', 5000, 0.2, 0.2)
+mas1 = filter1.get_table(10000, 10000)
+filter2 = Filter('high_pass', 40, 5.5, 1)
+mas2 = filter2.get_table(100, 10000)
 
 
-a = mas1
+a = mas2
 
 numbers = np.arange(10000)
-fn = 1000 * numbers / 10000
+fn = 100 * numbers / 10000
 
 fig, ax = plt.subplots()
 ax.plot(np.log(fn), np.log(a))
@@ -25,6 +25,6 @@ fig1, ax1 = plt.subplots()
 ax1.plot(fn, a)
 ax1.set_xlabel('f')
 ax1.set_ylabel('a')
-
+ax1.grid(True)
 
 plt.show()
