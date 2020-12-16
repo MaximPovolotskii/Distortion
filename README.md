@@ -85,7 +85,8 @@ Filter.get_table() выдает numpy-массив измененного спе
 ![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/pictures/peak.png )
 ![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/pictures/peak_no_ln.png )
 * high_shelf усиливает частоты выше данной
-![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/pictures/high_shelf.png )
+
+![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/pictures/high_shelf.png)
 ![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/pictures/high_shelf_no_ln.png )
 ## Эквалайзер
 
