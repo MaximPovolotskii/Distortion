@@ -6,9 +6,9 @@ import pygame as pg
 https://ru.stackoverflow.com/questions/927657/pyaudio-не-устанавливается
 '''
 
-FSAMP = 22050       # Частота сэмплирования, Hz
-SAMPLES_PER_FRAME = 1024  # Сэмплов за фрейм
-FRAMES_PER_FFT = 16 # За сколько фреймов усредняем Фурье
+FSAMP = 11025       # Частота сэмплирования, Hz
+SAMPLES_PER_FRAME = 512  # Сэмплов за фрейм
+FRAMES_PER_FFT = 8 # За сколько фреймов считаем Фурье
 TICK_TIME = 50
 LOWEST = 60
 HIGHEST = 70
