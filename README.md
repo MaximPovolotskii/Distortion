@@ -83,13 +83,18 @@ Filter.get_table() выдает numpy-массив измененного спе
 * peak резко усиливает область около конкретной частоты
 ![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/pictures/peak.png )
 * high_shelf усиливает частоты выше данной
+
 ![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/pictures/high_shelf.png)
 * low_shelf, соответственно, ниже данной
 
 ## Эквалайзер
 
-_to be written..._
+У нас написана функция эквализации, которая сначала разбивает канал на части по 960 сэмплов (0.02 с),
+выполняет на каждом из них эквализацию, а потом опять склеивает.
 
+Получая на вход канал channel и его длительность duration
+в секундах, возвращает отфильтрованный через все фильтры в массиве filter_cell
+новый канал new_channel
 ## Дисторшн
 
 ~~Давай уже аццкий рок!~~
