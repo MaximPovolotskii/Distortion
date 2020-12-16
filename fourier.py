@@ -4,18 +4,19 @@ import scipy.special
 import copy
 
 
-def smooth(yf):
+def smooth(yf, N):
     """
     функция очистки спектра от бесполезных частот с малыми амплитудами
     """
-    yf_sm = copy.copy(yf)
+    yf_sm = []
     abs_yf = np.abs(yf)
     max_value = abs_yf.max()
     
     for i in range(len(yf)):
-        if np.abs(yf[i]) < 0.05 * max_value:
-           yf_sm[i] = 0
-           
+        if 2.0 / N * abs_yf[i] < 4000:
+           yf_sm.append(0)
+        else:
+           yf_sm.append(yf[i])
     return yf_sm
 
 
@@ -33,7 +34,7 @@ def fourier_transform(*tracks_with_durations): # массив из [track, durat
         yf = scipy.fft.rfft(d_channel) 
         tf = np.linspace(0.0, dT*N, N)
         xf = np.linspace(0.0, 1.0/(2.0*dT), N//2)
-        yf_mas.append([yf, smooth(yf)]) # добавляем пару в общий массив
+        yf_mas.append([yf, smooth(yf, N)]) # добавляем пару в общий массив
         
     return yf_mas
 
@@ -59,7 +60,7 @@ def fourier_transform_graph(plt_show_usage=False, *tracks_with_durations): #[tra
         yf = scipy.fft.rfft(d_channel)
         tf = np.linspace(0.0, dT*N, N)
         xf = np.linspace(0.0, 1.0/(2.0*dT), N//2)
-        yf_mas.append([yf, smooth(yf)]) # добавляем пару в общий массив
+        yf_mas.append([yf, smooth(yf, N)]) # добавляем пару в общий массив
         
         # рисуем график самого отрезка
         ax.plot(tf, d_channel)
@@ -70,10 +71,10 @@ def fourier_transform_graph(plt_show_usage=False, *tracks_with_durations): #[tra
         ax1.set_title('spectrum')
 
         # рисуем очищенное разложение по спектру
-        ax2.plot(xf[0:N//4], 2.0/N * np.abs(smooth(yf)[0:N//4])) 
+        ax2.plot(xf[0:N//4], 2.0/N * np.abs(smooth(yf, N)[0:N//4])) 
         ax2.set_title('smooth spectrum')
 
-        if plt_show_usage:
+    if plt_show_usage:
             plt.show()
 
     return yf_mas

@@ -6,14 +6,14 @@ import math #встроенная
 import scipy
 
 import wavio # импортируется pip install
-import soundfile as sf # импортируется pip install
 
 from int3 import sign_int3
 from distortion import distortion
-from fourier import fourier_transform, smooth
+from fourier import fourier_transform, fourier_transform_graph
 from int_channel import WavFile
 from equalizer import equalize
 from filters import Filter
+
 """
 Предупреждение! Последняя строчка файла - создание файла с перегруженной гитарой
 """
@@ -21,7 +21,7 @@ from filters import Filter
 w, h = 800, 300
 DPI = 72
 
-WavFile_1 = WavFile("D:\Stossgebet_acoustic.wav")
+WavFile_1 = WavFile("D:\D5 acoustic.wav")
 
 WavFile_2 = WavFile("D:\D5 chord distortion.wav")
 
@@ -59,50 +59,20 @@ plt.show()
 """
 
 
-point = 48000 * 3
-point2 = 48000 * 2
-
-filter1 = Filter('low_pass', 8000, 3.5, 1)
-filter2 = Filter('high_pass', 200, 5.5, 1)
-filter3 = Filter('peak', 2080, 0.03, 0.1)
-filter4 = Filter('peak', 4160, 0.2, 0.05)
-filter5 = Filter('peak', 600, -0.15, 0.07)
-filter6 = Filter('peak', 3100, -0.01, 0.02)
-filter7 = Filter('peak', 1600, -0.008, 0.006)
-filter8 = Filter('low_pass', 5000, 3.5, 1)
-filter9 = Filter('peak', 450, 0.01, 0.02)
+point = int(48000 * 3)
+point2 = int(48000 * 2)
 
 
-
-chan = WavFile_1.channel() #отрезок, который хотим разложить в Фурье
+chan = WavFile_1.channel() 
 chan2 = WavFile_2.channel()[point2:point2+2000]
 chan_dur = WavFile_1.duration * len(chan) / len(WavFile_1.channel())
 chan2_dur = WavFile_2.duration * len(chan2) / len(WavFile_2.channel())
 
-eq_channel = equalize(chan, chan_dur, filter2)
-d_channel_pre = distortion(eq_channel, WavFile_1.roof // 4, 50)
-d_channel = equalize(d_channel_pre, chan_dur, filter2, filter4, filter3, filter5, filter7, filter1, filter8, filter9)
+d_channel = distortion(chan, chan_dur, WavFile_1.roof // 4, 50)
 
-# yf_mas = fourier_transform([chan2, chan2_dur], [d_channel, chan_dur])
-"""
-N = len(d_channel)
-dT = 1 / 48000
-yf = scipy.fft.rfft(d_channel)
-tf = np.linspace(0.0, dT*N, N)
-xf = np.linspace(0.0, 1.0/(2.0*dT), N//2)
+chan3 = d_channel[point:point+2000]
+chan3_dur = WavFile_1.duration * len(chan3) / len(WavFile_1.channel())
 
-fig, ax = plt.subplots()
-fig1, ax1 = plt.subplots()
-fig2, ax2 = plt.subplots()
+yf_mas = fourier_transform_graph(True, [chan2, chan2_dur], [chan3, chan3_dur])
 
-ax.plot(tf, d_channel)
-ax.set_title('d_channel')
-# рисуем разложение по спектру
-ax1.plot(xf[0:N//4], 2.0/N * np.abs(yf[0:N//4])) 
-ax1.set_title('spectrum')
-ax2.plot(xf[0:N//4], 2.0/N * np.abs(smooth(yf)[0:N//4])) 
-ax2.set_title('smooth spectrum')
-
-plt.show()
-"""
-wavio.write("Stossgebet_once_more.wav", np.array(d_channel), rate=WavFile_1.framerate, sampwidth=3)
+wavio.write("D5 D5.wav", np.array(d_channel), rate=WavFile_1.framerate, sampwidth=3)
