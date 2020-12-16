@@ -1,21 +1,14 @@
 import wave #встроенная
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
 import math #встроенная
-'''
-import wavio #импортируется pip install
-import soundfile as sf #импортируется pip install
-'''
 from int3 import sign_int3
-from distortion import distortion
-from fourier import fourier_transform
+
 
 class WavFile():
     """
-    WAVE-file class
-    has all data about the file and its contents
-    can present contents as an array of integers
+    класс WAVE-file
+    содержит всю информацию о дорожке
+    может предоставить содержимое канала в виде массива интов
     """
     def __init__(self, name):
         wav = wave.open(name, mode="r")
@@ -23,23 +16,23 @@ class WavFile():
          nframes, comp_type, comp_name) = wav.getparams()
         
         self.wav = wav
-        self.nchannels = nchannels
-        self.sampwidth = sampwidth
-        self.framerate = framerate
-        self.nframes = nframes
-        self.comp_type = comp_type
-        self.comp_name = comp_name
+        self.nchannels = nchannels # число каналов
+        self.sampwidth = sampwidth # размер сэмпла в байтах
+        self.framerate = framerate # частота дикретизации (фреймов в секунду)
+        self.nframes = nframes     # общее число фреймов
+        self.comp_type = comp_type # тип компрессии
+        self.comp_name = comp_name # название компрессора
         
-        self.content = wav.readframes(nframes)
+        self.content = wav.readframes(nframes) # содержимое файла
         
-        self.duration = nframes / framerate
-        self.roof = 256 ** sampwidth // 2
+        self.duration = nframes / framerate # длительность
+        self.roof = 256 ** sampwidth // 2 # максимальная амплитуда
         
         wav.close()
         
     def channel(self):
         """
-        returns an integer array of contsnts data
+        возвращает один из каналов contents в виде удобного массива знаковых интов
         """
         sample_b = sign_int3(self.content)
         
@@ -51,6 +44,9 @@ class WavFile():
         return channel
 
     def format_time(self, x, pos=None):
+        """
+        функция для отрисовки оси времени в draw_wave
+        """
         progress = int(x / float(self.nframes) * self.duration)
         mins, secs = divmod(progress, 60)
         hours, mins = divmod(mins, 60)
@@ -60,6 +56,9 @@ class WavFile():
         return out
 
     def format_db(self, x, pos=None):
+        """
+        функция для отрисовки оси амплитуды в дБ в draw_wave
+        """
         if pos == 0:
             return ""
         if x == 0:
