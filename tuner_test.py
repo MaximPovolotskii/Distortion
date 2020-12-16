@@ -14,9 +14,11 @@ LOWEST = 60
 HIGHEST = 70
 NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 
-SCREEN_SIZE = (12*50, 100)
+W = 100
+SCREEN_SIZE = (12*W, 100)
 COLOR = (100, 100, 151)
 SCREEN_COLOR = (0, 0, 51)
+P_COLOR = (128,255,191)
 
 SAMPLES_PER_FFT = SAMPLES_PER_FRAME * FRAMES_PER_FFT
 FREQ_STEP = FSAMP / SAMPLES_PER_FFT
@@ -59,7 +61,7 @@ class Calculator():
         и отсюда
         https://webhamster.ru/mytetrashare/index/mtb0/1343982148vkmqs7k7ig
         '''
-        self.p = 69 + (np.log2(self.freq / 440))
+        self.p = 69 + 12*(np.log2(self.freq / 440))
         self.note_number = int(round(self.p))
         self.note_name = NOTE_NAMES[self.note_number % 12]
     
@@ -69,15 +71,27 @@ class Drawer():
         self.screen = pg.display.set_mode(SCREEN_SIZE)
         
     def draw_initial(self):
+        '''
+        рисует фон и шкалу
+
+        '''
         self.screen.fill(SCREEN_COLOR)
         for i in range(12):
             font = pg.font.Font(None, 40)
             text_score = font.render(NOTE_NAMES[i], False, COLOR)
-            self.screen.blit(text_score, (50*i, 0)) 
-            pg.draw.line(self.screen, COLOR, [50*i, 10], [50*i, 100])
+            self.screen.blit(text_score, (W*i, 0)) 
+            pg.draw.line(self.screen, COLOR, [W*i, 10], [W*i, 100])
             
-    def draw_p(self):
-        pass
+    def draw_p(self, p, note_number):
+        '''
+        рисует маркер
+        '''
+        
+        x_coord = W * (note_number%12) + int(round(W * (p - note_number)))
+        print('fuck', note_number, (W * (p - note_number)), x_coord)
+        if x_coord < 0:
+            x_coord += SCREEN_SIZE[0]
+        pg.draw.circle(self.screen, P_COLOR, (x_coord, 50), 5)
     
 class Manager():
     
@@ -101,6 +115,7 @@ class Manager():
         
     def draw(self):
         self.drawer.draw_initial()
+        self.drawer.draw_p(self.calc.p, self.calc.note_number)
         
     
     def handle_events(self, events):
@@ -122,16 +137,15 @@ number_frames = 0
 while not mgr.done:
     mgr.move()
     mgr.calculate()
-    mgr.draw()
-    clock.tick(100)
     mgr.handle_events(pg.event.get())
     pg.display.flip()
     number_frames += 1
 
     if number_frames >= FRAMES_PER_FFT:
-        print( 'freq:',  mgr.calc.freq, mgr.calc.p)
-        
+        print( 'freq:',  mgr.calc.freq, mgr.calc.p, mgr.calc.note_name)
+        mgr.draw()
+        clock.tick(100)
 pg.quit()
 
-
+#232.8277587890625 57.981114593331725 A#
 
