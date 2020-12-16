@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import math #встроенная
 import scipy
+import os.path
 
 import wavio # импортируется pip install
 
@@ -21,25 +22,71 @@ from filters import Filter
 w, h = 800, 300
 DPI = 72
 
-WavFile_1 = WavFile("D:\D5 acoustic.wav")
-
-WavFile_2 = WavFile("D:\D5 chord distortion.wav")
 
 
-point = int(48000 * 3)
-point2 = int(48000 * 2)
+print("Инструкция.")
+print("1) Введите имя wav-файла, с которым будете работать.")
+print("2) Введите параметры фильтров в виде type (peak, high_shelf или т.п.) f0 a0 b0.")
+print("Чтобы прекратить ввод фильтров, введите stop (слово).")
+print("3) Введите после distortion параметр gain (gain - число), чтобы использовать дисторшн с этим гейном.")
+print("Введите gain = 0, если не хотите перегруз.")
+"""
+print("4) Введите 1 после wave draw, если хотите нарисовать дорожку изначального аудиофайла.")
+print("Введите 0, если не хотите.")
+"""
+print("5) Введите 1 и название (без .wav), если хотите сохранить канал. Если не хотите, введите первым 0.\n")
+
+flag = True
+
+while flag:
+    caption = input("Введите название файла: ")
+    if not os.path.exists(caption) or not os.path.isfile(caption):
+        print("Неправильное имя файла")
+        caption = input("Введите название файла: ")
+    else:
+        strl = len(caption)
+        if caption[strl - 4 : strl] != '.wav':
+            print("Неправильное расширение файла")
+            caption = input("Введите название файла: ")
+        else:
+            WavFile_1 = WavFile(caption)
+            flag = False
 
 
-chan = WavFile_1.channel() 
-chan2 = WavFile_2.channel()[point2:point2+2000]
-chan_dur = WavFile_1.duration * len(chan) / len(WavFile_1.channel())
-chan2_dur = WavFile_2.duration * len(chan2) / len(WavFile_2.channel())
+# ввод фильтров
+a = True
+n = 1
+filter_array = []
+while a:
+    str = input("filter" + str(n) + ": ")
+    if str == "stop":
+        a = False
+    else:
+        if a in ('peak', 'high_pass', 'low_pass', 'high_shelf', 'low_shelf'):
+            param = str.split()
+            for i in range(1, 4):
+                param[i] =  float(param[i])
+            filter_array.append(Filter(param[0], param[1], param[2], param[3]))
+            n += 1
+        else:
+            print("Это не является типом фильтра или словом stop")
+        
 
-d_channel = distortion(chan, chan_dur, WavFile_1.roof // 4, 50)
+# эквализация
+channel = WavFile_1.channel()
+dur = WavFile_1.duration
 
-chan3 = d_channel[point:point+2000]
-chan3_dur = WavFile_1.duration * len(chan3) / len(WavFile_1.channel())
+if n > 1:
+    for filter_cell in filter_array:
+        channel = equalize(channel, dur, filter_cell)
 
-yf_mas = fourier_transform_graph(True, [chan2, chan2_dur], [chan3, chan3_dur])
+# дисторшн
+gain = float(input("distortion: "))
+if gain != 0:
+    channel = distortion(channel, dur, WavFile_1.roof // 4, gain)
 
-# wavio.write("D5 D5.wav", np.array(d_channel), rate=WavFile_1.framerate, sampwidth=3)
+# сохранение
+str = input("save: ").split()
+print(str)
+if str[0] == "1":
+    wavio.write(str[1] + ".wav", np.array(channel), rate=WavFile_1.framerate, sampwidth=WavFile_1.sampwidth)
