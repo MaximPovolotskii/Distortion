@@ -1,11 +1,24 @@
 import numpy as np
-import matplotlib.pyplot as plt
 
 class Filter():
     """
     класс фильтра
     """
     def __init__(self, filter_type, f0, a0, b0):
+        '''
+        Parameters
+        ----------
+        filter_type : string
+            
+        f0 : int
+            характерная частота фильтрации
+        a0 : float/int
+            константа фильтрации, отвечающая за вид кривой
+        b0 : float/int
+            константа фильтрации, не меняющая вид кривой,
+            на нее просто умножается вся функция
+            
+        '''
         self.type = filter_type
         self.f0 = f0 # f0 - характерная частота фильтрации
         self.a0 = a0
@@ -13,7 +26,8 @@ class Filter():
 
     def get_table(self, fmax, N):
         """
-        метод, возвращающий массив преобразования спектра для N частот от 0 до fmax
+        метод, возвращающий массив преобразования спектра
+        для N частот от 0 до fmax
         """
         numbers = np.arange(N)
         fn = fmax * numbers / N
@@ -28,16 +42,16 @@ class Filter():
         if self.type == 'low_pass':
             pass_a0 = self.a0
             pass_h0 = self.b0
-            #pass_a0 = 3 # a0 > 0, при увеличении a0 увеличивается резкость отрубания
+            #pass_a0 = 3  > 0, при увеличении a0 увеличивается резкость отрубания
             #pass h0 влияет на амплитуду
             a = np.exp(pass_a0*(-np.exp(pass_a0*(np.log(fn)-np.log(self.f0)))))
         
         if self.type == 'high_pass':
             pass_a0 = self.a0
             pass_h0 = self.b0
-            #pass_a0 = 3 # a0 < 0, при увеличении модуля a0 увеличивается резкость отрубания
+            #pass_a0 = 3 > 0, при увеличении модуля a0 увеличивается резкость отрубания
             #pass h0 влияет на амплитуду
-            a = np.exp(pass_a0*(-np.exp(-pass_a0*(np.log(fn)-np.log(self.f0)))))
+            a = np.exp(pass_h0*(-np.exp(-pass_a0*(np.log(fn)-np.log(self.f0)))))
         
         if self.type == 'high_shelf':
             shelf_h0 = self.a0
@@ -54,8 +68,4 @@ class Filter():
             a = np.exp(-shelf_h0*(np.tanh(shelf_a0*(np.log(fn)-np.log(self.f0))) - 1))
                 
         return a
-
-
-
-
 
