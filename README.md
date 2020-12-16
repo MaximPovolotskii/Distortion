@@ -71,15 +71,15 @@ overdrive, distortion, fuzz -- получали с помощью перегру
 в цепочку лампы, а позже и транзисторы создавали нелинейные искажения, ограничивая или вовсе обрезая верхушки
 "горбов" у синусоид чистого сигнала.
 
-![alt text](https://github.com/MaximPovolotskii/Distortion/Sine400Hz.png)
+![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/Sine400Hz.png )
 
-![alt text](https://github.com/MaximPovolotskii/Distortion/Clipped_sine.png)
+![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/Clipped_sine.png)
 
 Если разложить такой искажённый в спектр, то получится изначальный спектр, значительно обогащённый гармониками -- частотами,
 которые кратны доминирующим частотам в изначально спектре. Вот что получится, если провести чистую синусоиду через такое
 обрезание:
 
-![alt text](https://github.com/MaximPovolotskii/Distortion/Clipping_spectrum.png)
+![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/Clipping_spectrum.png)
 
 В современном мире аналоговое искажение чаще транзисторное -- жёстко ограничивающее сигнал по амплитуде, а если разложить 
 такую псевдомеандровую функцию в ряд Фурье, то получится ряд только из нечётных гармоник с амплитудами, обратно 
