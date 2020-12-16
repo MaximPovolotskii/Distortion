@@ -79,15 +79,13 @@ Filter.get_table() выдает numpy-массив измененного спе
 Теперь о типах фильтров:
 * high_pass пропускает высокие частоты и не пропускает низкие (высокие - выше заданной)
 ![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/pictures/high_pass.png )
-![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/pictures/high_pass_no_ln.png )
 * low_pass, соответственно, наоборот
 * peak резко усиливает область около конкретной частоты
 ![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/pictures/peak.png )
-![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/pictures/peak_no_ln.png )
 * high_shelf усиливает частоты выше данной
-
 ![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/pictures/high_shelf.png)
-![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/pictures/high_shelf_no_ln.png )
+* low_shelf, соответственно, ниже данной
+
 ## Эквалайзер
 
 _to be written..._
