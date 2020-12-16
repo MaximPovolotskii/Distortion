@@ -1,7 +1,7 @@
 import copy
 import numpy as np
 import matplotlib.pyplot as plt
-from fourier import fourier_transform, reverse_transform
+from fourier import fourier_transform, reverse_transform, fourier_transform_graph
 from filters import Filter
 from equalizer import equalize, piece_equalize
 
@@ -22,6 +22,7 @@ w4 = 2*np.pi * frec * 10
 w5 = 2*np.pi * frec * 15
 w6 = 2*np.pi * frec * 20
 
-channel = (255 * np.sin(w1 * t) + 255 * np.sin(w2 * t) + 255 * np.sin(w3 * t) +
-           + 255 * np.sin(w4 * t) + 255 * np.sin(w5 * t) + 255 * np.sin(w6 * t))
+channel = (255**3 * np.sin(w1 * t) + 255**3 * np.sin(w2 * t) + 255**3 * np.sin(w3 * t) +
+           + 255**3 * np.sin(w4 * t) + 255**3 * np.sin(w5 * t) + 255**3 * np.sin(w6 * t))
 new_channel = equalize(channel, T, filter1)
+fourier_transform_graph(True, [new_channel, T])

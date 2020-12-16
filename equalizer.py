@@ -11,7 +11,7 @@ def piece_equalize(channel, duration, *filter_cell):
     в секундах, возвращает отфильтрованный через все фильтры в массиве filter_cell
     новый канал new_channel
     """
-    spectrum = fourier_transform([channel, duration])[1]
+    spectrum = fourier_transform([channel, duration])[0][1]
     N = len(channel)
     
     for cell in filter_cell:
