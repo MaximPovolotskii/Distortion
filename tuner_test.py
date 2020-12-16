@@ -6,25 +6,26 @@ import pygame as pg
 https://ru.stackoverflow.com/questions/927657/pyaudio-не-устанавливается
 '''
 
-FSAMP = 11025       # Частота сэмплирования, Hz
+FSAMP = 11025       # Частота сэмплов Hz
 SAMPLES_PER_FRAME = 512  # Сэмплов за фрейм
 FRAMES_PER_FFT = 8 # За сколько фреймов считаем Фурье
 TICK_TIME = 50
-LOWEST = 60
-HIGHEST = 70
+LOWEST = 10^3
+HIGHEST = 10
 NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 
 W = 100
 SCREEN_SIZE = (12*W, 100)
 COLOR = (100, 100, 151)
 SCREEN_COLOR = (0, 0, 51)
-P_COLOR = (128,255,191)
+P_COLOR = (128, 255, 191)
+SHIFT = 10
 
 SAMPLES_PER_FFT = SAMPLES_PER_FRAME * FRAMES_PER_FFT
 FREQ_STEP = FSAMP / SAMPLES_PER_FFT
 
 class Audio():
-    
+
     def __init__(self):
         self.stream = pa.PyAudio().open(format=pa.paInt16,
                                 channels=1,
@@ -35,9 +36,7 @@ class Audio():
 
 class Calculator():
     
-    def __init__(self, lowest_note=60, highest_note=69):
-        self.lowest = lowest_note
-        self.highest = highest_note
+    def __init__(self):
         self.freq = 1
         self.p = 0
         self.note_number = 0
@@ -79,25 +78,26 @@ class Drawer():
         for i in range(12):
             font = pg.font.Font(None, 40)
             text_score = font.render(NOTE_NAMES[i], False, COLOR)
-            self.screen.blit(text_score, (W*i, 0)) 
-            pg.draw.line(self.screen, COLOR, [W*i, 10], [W*i, 100])
+            self.screen.blit(text_score,
+                             (W//2 - len(NOTE_NAMES[i])*SHIFT + W*i, 0)) 
+            pg.draw.line(self.screen, COLOR,
+                         [W//2 + W*i, 10], [W//2 + W*i, 100])
             
     def draw_p(self, p, note_number):
         '''
         рисует маркер
         '''
-        
-        x_coord = W * (note_number%12) + int(round(W * (p - note_number)))
-        print('fuck', note_number, (W * (p - note_number)), x_coord)
+        x_coord = W//2 + W * (note_number%12) + int(round(W * (p - note_number)))
         if x_coord < 0:
             x_coord += SCREEN_SIZE[0]
         pg.draw.circle(self.screen, P_COLOR, (x_coord, 50), 5)
+        
     
 class Manager():
     
     def __init__(self):
         self.audio = Audio()
-        self.calc = Calculator(LOWEST, HIGHEST)
+        self.calc = Calculator()
         self.drawer = Drawer()
         self.done = False
     
@@ -142,10 +142,12 @@ while not mgr.done:
     number_frames += 1
 
     if number_frames >= FRAMES_PER_FFT:
-        print( 'freq:',  mgr.calc.freq, mgr.calc.p, mgr.calc.note_name)
+        '''
+        мне лично с этой строкой понятнее, что происходит, но вряд ли она
+        нужна в финальной версии
+        print( 'freq:',  mgr.calc.freq, 'p:',  mgr.calc.p, mgr.calc.note_name)
+        '''
         mgr.draw()
-        clock.tick(100)
-pg.quit()
 
-#232.8277587890625 57.981114593331725 A#
+pg.quit()
 
