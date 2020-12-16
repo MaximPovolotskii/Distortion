@@ -81,7 +81,7 @@ class Drawer():
             self.screen.blit(text_score,
                              (W//2 - len(NOTE_NAMES[i])*SHIFT + W*i, 0)) 
             pg.draw.line(self.screen, COLOR,
-                         [W//2 + W*i, 10], [W//2 + W*i, 100])
+                         [W//2 + W*i, 22], [W//2 + W*i, 100])
             
     def draw_p(self, p, note_number):
         '''
