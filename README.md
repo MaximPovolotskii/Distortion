@@ -64,25 +64,37 @@
 
 Для фильтрации частот был создан класс Filter. 
 У него есть четыре параметра:
-*filter_type : string
+* filter_type : string
 	тип фильтра: peak, low_pass, high_pass, low_shelf, high_shelf
-*f0 : int
+* f0 : int
 	характерная частота фильтрации
-*a0 : float/int
+* a0 : float/int
 	константа фильтрации, отвечающая за вид кривой
-*b0 : float/int
+* b0 : float/int
 	константа фильтрации, не меняющая вид кривой,
 	на нее просто умножается вся функция
 
 Filter.get_table() выдает numpy-массив измененного спектра для N частот от 0 до fmax
 
 Теперь о типах фильтров:
+* high_pass пропускает высокие частоты и не пропускает низкие (высокие - выше заданной)
+![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/pictures/high_pass.png )
+* low_pass, соответственно, наоборот
+* peak резко усиливает область около конкретной частоты
+![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/pictures/peak.png )
+* high_shelf усиливает частоты выше данной
 
+![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/pictures/high_shelf.png)
+* low_shelf, соответственно, ниже данной
 
 ## Эквалайзер
 
-_to be written..._
+У нас написана функция эквализации, которая сначала разбивает канал на части по 960 сэмплов (0.02 с),
+выполняет на каждом из них эквализацию, а потом опять склеивает.
 
+Получая на вход канал channel и его длительность duration
+в секундах, возвращает отфильтрованный через все фильтры в массиве filter_cell
+новый канал new_channel
 ## Дисторшн
 
 ~~Давай уже аццкий рок!~~
@@ -94,15 +106,15 @@ overdrive, distortion, fuzz -- получали с помощью перегру
 в цепочку лампы, а позже и транзисторы создавали нелинейные искажения, ограничивая или вовсе обрезая верхушки
 "горбов" у синусоид чистого сигнала.
 
-![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/Sine400Hz.png )
+![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/pictures/Sine400Hz.png )
 
-![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/Clipped_sine.png)
+![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/pictures/Clipped_sine.png)
 
 Если разложить такой искажённый в спектр, то получится изначальный спектр, значительно обогащённый гармониками -- частотами,
 которые кратны доминирующим частотам в изначально спектре. Вот что получится, если провести чистую синусоиду через такое
 обрезание:
 
-![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/Clipping_spectrum.png)
+![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/pictures/Clipping_spectrum.png)
 
 В современном мире аналоговое искажение чаще транзисторное -- жёстко ограничивающее сигнал по амплитуде, а если разложить 
 такую псевдомеандровую функцию в ряд Фурье, то получится ряд только из нечётных гармоник с амплитудами, обратно 
