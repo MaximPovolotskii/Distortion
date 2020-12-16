@@ -77,8 +77,9 @@
 Filter.get_table() выдает numpy-массив измененного спектра для N частот от 0 до fmax
 
 Теперь о типах фильтров:
-
-
+*high_pass пропускает высокие частоты и не пропускает низкие (высокие - выше заданной)
+![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/pictures/high_pass.png )
+![alt text](https://github.com/MaximPovolotskii/Distortion/blob/main/pictures/high_pass_no_ln.png )
 ## Эквалайзер
 
 _to be written..._
