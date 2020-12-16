@@ -25,39 +25,6 @@ WavFile_1 = WavFile("D:\D5 acoustic.wav")
 
 WavFile_2 = WavFile("D:\D5 chord distortion.wav")
 
-"""
-plt.figure(1, figsize=(float(w)/DPI, float(h)/DPI), dpi=DPI)
-
-
-axes = plt.subplot(3, 1, 1, facecolor="k")
-axes.plot(WavFile_1.channel(), "g")
-axes.yaxis.set_major_formatter(ticker.FuncFormatter(WavFile_1.format_db))
-plt.grid(True, color="w")
-axes.xaxis.set_major_formatter(ticker.FuncFormatter(WavFile_1.format_time))
-"""
-
-"""
-axes = plt.subplot(3, 1, 2, facecolor="k")
-axes.plot(d_channel, "g")
-axes.yaxis.set_major_formatter(ticker.FuncFormatter(WavFile_1.format_db))
-plt.grid(True, color="w")
-axes.xaxis.set_major_formatter(ticker.NullFormatter())
-"""
-
-"""
-axes = plt.subplot(3, 1, 3, facecolor="k")
-axes.plot(WavFile_2.channel(), "g")
-axes.yaxis.set_major_formatter(ticker.FuncFormatter(WavFile_2.format_db))
-plt.grid(True, color="w")
-axes.xaxis.set_major_formatter(ticker.FuncFormatter(WavFile_2.format_time))
-plt.show()
-"""
-
-"""
-Чтобы дисторшн-файл создался, надо закрыть график
-Если закрыть консоль до закрытия графика, файл не создастся
-"""
-
 
 point = int(48000 * 3)
 point2 = int(48000 * 2)
@@ -75,4 +42,4 @@ chan3_dur = WavFile_1.duration * len(chan3) / len(WavFile_1.channel())
 
 yf_mas = fourier_transform_graph(True, [chan2, chan2_dur], [chan3, chan3_dur])
 
-wavio.write("D5 D5.wav", np.array(d_channel), rate=WavFile_1.framerate, sampwidth=3)
+# wavio.write("D5 D5.wav", np.array(d_channel), rate=WavFile_1.framerate, sampwidth=3)
