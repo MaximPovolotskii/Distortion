@@ -4,43 +4,42 @@ from fourier import fourier_transform
 import scipy
 import matplotlib.pyplot as plt
 from filters import Filter
-from equalizer import piece_equalize
+from equalizer import piece_equalize, equalize
 
+"""
+Ich tu dir weh
+Tut mir nicht leid
+Das tut mir gut
+Hört wie es schreit
+Если бы эта функция пела песню, она бы пела бы это в мой адрес
+"""
 
-def clipping(value, roof):
-    x = value / roof
-    cl_value = np.tanh(x) * roof
-    return cl_value
-
-def distortion (channel, roof, set_gain=1):
+def distortion (channel, duration, roof, set_gain=1):
     gain = set_gain
-    d_channel = copy.copy(channel)
+    d_channel_fresh = copy.copy(channel)
+
+    filter1 = Filter('low_pass', 8000, 3.5, 1)
+    filter2 = Filter('high_pass', 40, 5.5, 1)
+    filter3 = Filter('peak', 2080, 0.03, 0.1)
+    filter4 = Filter('peak', 4160, 0.5, 0.5)
+    filter5 = Filter('peak', 470, -0.13, 0.07)
+    filter6 = Filter('peak', 3100, -0.01, 0.02)
+    filter7 = Filter('peak', 1600, -0.008, 0.006)
+    filter8 = Filter('low_pass', 5000, 3.5, 1)
+    filter9 = Filter('peak', 250, -0.05, 0.001)
+    filter10 = Filter('peak', 5000, 0.25, 0.2)
+    filter11 = Filter('low_pass', 7000, 4, 2)
+    filter12 = Filter('peak', 150, -0.003, 0.002)
+    filter13 = Filter('peak', 1300, -0.05, 0.07)
+    filter14 = Filter('peak', 200, -0.003, 0.002)
+    filter15 = Filter('peak', 2300, 0.001, 0.002)
+    filter16 = Filter('peak', 650, -0.08, 0.07)
+    
+    d_channel = equalize(d_channel_fresh, duration, filter2, filter9)
+    
     for i in range(len(d_channel)):
-        d_channel[i] = gain * d_channel[i]
-        d_channel[i] = int(clipping(abs(d_channel[i]), roof)) * np.sign(d_channel[i])
-    return d_channel
+        d_channel[i] = int(roof * np.tanh(gain * d_channel[i] / roof))
 
-"""
-T = 0.01
-N = int(48000 * T)
-frec = 200
-filter1 = Filter('peak', 4000, 0.03, 0.001)
-filter2 = Filter('peak', 2500, 0.15, 0.1)
-filter3 = Filter('peak', 1000, -0.01, 0.001)
-
-
-t = np.linspace(0.0, T, N)
-w1 = 2*np.pi * frec * 2
-w2 = 2*np.pi * frec * 5
-w3 = 2*np.pi * frec * 13
-channel = (256**2 - 1) * np.sin(w1 * t)
-# d_channel_5 = piece_equalize(distortion(channel, 256**2 , 5), T, filter1)
-d_channel_10 = piece_equalize(distortion(channel, 256**2, 10), T, filter2)
-
-# fourier_transform([channel, T])
-# fourier_transform([d_channel_5, T])
-fourier_transform([d_channel_10, T])
-
-
-plt.show()
-"""
+    d_channel_post = equalize(d_channel, duration, filter5, filter10, filter11, filter12, filter13, filter14, filter15, filter16, filter2)
+    
+    return d_channel_post
